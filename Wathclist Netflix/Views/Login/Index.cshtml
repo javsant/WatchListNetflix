@@ -1,0 +1,81 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    var user = @Session["user"];
+}
+
+<div class="jumbotron">
+    <h1>WatchList Netflix</h1>
+    @if (user != null)
+    {
+            <div id="login">
+                <p class="lead">Bienvenido, @user</p>
+            </div>
+    }
+    else
+    {
+        <p class="lead">¿Es tu primera vez? <a href="https://localhost:44312/SignIn/Index">Registrate</a></p>
+        <div class="container-fluid" id="login">
+            <form v-on:submit.prevent="logIn" class="form-horizontal" method="post">
+                <div class="form-group">
+                    <label>Nombre de usuario </label><br>
+                    <input class="form-control" type="text" name="userName" v-model="userName" required><br>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña </label><br>
+                    <input class="form-control" type="password" name="pass" v-model="pass" id="pass" required><br>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Entrar</button>
+                    </div>
+                </div>
+            </form>
+            <div v-if="error !== ''" class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        </div>
+        
+    }
+</div>
+
+@section scripts{
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+
+        var app = new Vue({
+            el: "#login",
+            data: {
+                userName: "",
+                pass: "",
+                log: "",
+                logged: null,
+                error: ""
+            },
+            methods: {
+                logIn: function () {
+                    axios.post('/Login/Login', {
+                        name: this.userName,
+                        pass: this.pass
+                    })
+                        .then(response => {
+                            if (response.data == "True") {
+                                window.location.href = "https://localhost:44312/Login/Index";
+                            } else {
+                                this.error = "Datos incorrectos";
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al llamar al controlador:', error);
+                        });
+                }
+
+            }
+        })
+
+    </script>
+
+}
